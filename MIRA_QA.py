@@ -20,7 +20,7 @@ os.environ["LANGCHAIN_API_KEY"] = os.getenv('LANGCHAIN_API_KEY')
 class MIRA:
     def __init__(self) -> None:
         self.embeddings = OpenAIEmbeddings(model='text-embedding-ada-002'),
-        self.llm = ChatOpenAI(model="gpt-3.5-turbo")
+        self.llm = ChatOpenAI(model="gpt-3.5-turbo"),
         
         
     def retrieve_documents_HYDE(self,query:str):
@@ -28,10 +28,10 @@ class MIRA:
         prompt_hyde = ChatPromptTemplate.from_template(passage_template)
 
         generate_docs_for_retrieval = (
-            prompt_hyde | self.llm | StrOutputParser() 
+            prompt_hyde | ChatOpenAI(model="gpt-3.5-turbo", temperature=0) | StrOutputParser() 
         )
         
-        retrieval_chain = generate_docs_for_retrieval | vector_search.as_retriever(search_type='similarity',search_kwargs={"k":5})
+        retrieval_chain = generate_docs_for_retrieval | vector_search.as_retriever(search_type='similarity',search_kwargs={"k":6})
         retireved_docs = retrieval_chain.invoke({"question":query})
         
         return retireved_docs
@@ -44,13 +44,11 @@ class MIRA:
 
         final_rag_chain = (
             prompt
-            | ChatOpenAI(model="gpt-3.5-turbo",temperature=0)
+            | ChatOpenAI(model="gpt-3.5-turbo", temperature=0)
             | StrOutputParser()
         )
 
         answer = final_rag_chain.invoke({"context":retrieved_docs,"question":query})
         
         return answer
-    
-    
     

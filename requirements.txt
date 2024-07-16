@@ -1,8 +1,10 @@
 fastapi
 uvicorn
-websockets
 pydantic
 langchain
 langchain-openai
+langchain_community
 langchain-mongodb
 python-dotenv
+python-multipart
+pypdf
