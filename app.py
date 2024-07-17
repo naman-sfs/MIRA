@@ -1,5 +1,5 @@
 import os
-from fastapi import FastAPI, UploadFile, File
+from fastapi import FastAPI, UploadFile, File, Form
 from pydantic import BaseModel
 from MIRA_QA import MIRA
 from training import train_mira
@@ -28,7 +28,9 @@ async def mira(ques:Question):
     
     
 @app.post('/api/mira/train')
-async def training(file: UploadFile = File(...)):
+async def training(file: UploadFile = File(...),key: str = Form(...)):
+    if key != os.getenv('MIRA_KEY'):
+        return {"success":"false","msg":"Unauthorized"}
     
     if not os.path.exists(os.getenv('UPLOAD_DIRECTORY')):
         os.makedirs(os.getenv('UPLOAD_DIRECTORY'))
