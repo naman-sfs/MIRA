@@ -1,9 +1,11 @@
 import os
 from fastapi import FastAPI, UploadFile, File, Form
+from fastapi.responses import HTMLResponse
 from fastapi.middleware.cors import CORSMiddleware
 from pydantic import BaseModel
 from MIRA_QA import MIRA
 from training import train_mira
+from mira_view import html_content
 
 app = FastAPI()
 
@@ -66,3 +68,7 @@ async def training(file: UploadFile = File(...),key: str = Form(...)):
     
     return {"success":"false","msg":"something went wrong!"}
     
+    
+@app.get("/mira", response_class=HTMLResponse)
+async def get_webpage():
+    return HTMLResponse(content=html_content)
