@@ -1,10 +1,26 @@
 import os
 from fastapi import FastAPI, UploadFile, File, Form
+from fastapi.middleware.cors import CORSMiddleware
 from pydantic import BaseModel
 from MIRA_QA import MIRA
 from training import train_mira
 
 app = FastAPI()
+
+origins = [
+    "http://localhost:5500",
+    "http://127.0.0.1:5500",
+    "http://ec2-3-106-224-103.ap-southeast-2.compute.amazonaws.com:8000"
+]
+
+app.add_middleware(
+    CORSMiddleware,
+    allow_origins=origins,
+    allow_credentials=True,
+    allow_methods=["*"],
+    allow_headers=["*"],
+)
+
 
 class Question(BaseModel):
     question: str
