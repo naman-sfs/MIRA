@@ -10,8 +10,8 @@ from mira_view import html_content
 app = FastAPI()
 
 origins = [
-    "http://localhost:5500",
-    "http://127.0.0.1:5500",
+    "http://localhost:8000",
+    "http://127.0.0.1:8000",
     "http://ec2-3-106-224-103.ap-southeast-2.compute.amazonaws.com:8000"
 ]
 
@@ -53,7 +53,7 @@ async def training(file: UploadFile = File(...),key: str = Form(...)):
     if not os.path.exists(os.getenv('UPLOAD_DIRECTORY')):
         os.makedirs(os.getenv('UPLOAD_DIRECTORY'))
         
-    file_location = f"files/{file.filename}"
+    file_location = f"{os.getenv('UPLOAD_DIRECTORY')}{file.filename}"
     
     if os.path.exists(file_location):
         return {"success":"false","msg":"File already exists!"}
