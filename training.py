@@ -16,14 +16,18 @@ def train_mira(file_location):
         client = MongoClient(MONGODB_ATLAS_CLUSTER_URI)
         MONGODB_COLLECTION = client[DB_NAME][COLLECTION_NAME]
         
+        # initialize embedding model
         embeddings = OpenAIEmbeddings(model='text-embedding-ada-002')
         
+        # load the pdf file
         loader = PyPDFLoader(f'./{file_location}')
         documents = loader.load_and_split()
-            
+        
+        # split documents into chunks
         text_splitter = RecursiveCharacterTextSplitter(chunk_size = 1000, chunk_overlap = 200, add_start_index = True)
         chunks = text_splitter.split_documents(documents)
 
+        # save to database
         vector_search = MongoDBAtlasVectorSearch.from_documents(
             documents=chunks,
             embedding=embeddings,

@@ -27,48 +27,59 @@ app.add_middleware(
 class Question(BaseModel):
     question: str
     key:str
-    
 
+
+# endpoint for asking questions
 @app.post('/api/mira/ask')
 async def mira(ques:Question):
     mira = MIRA()
     # try:
+    # verify the key
     if ques.key != os.getenv('MIRA_KEY'):
         return {"success":"false","msg":"Unauthorized"}
     
+    # retrieve the similar chunks
     docs = mira.retrieve_documents_HYDE(ques.question)
     
+    # generate the answer from query
     answer = mira.ask_query(ques.question,docs)
     
     return {"success":"true","data": answer}
     # except Exception as e:
     #     return {"success":"false","msg":e}
-    
-    
+
+
+#endpoint for training new pdfs
 @app.post('/api/mira/train')
 async def training(file: UploadFile = File(...),key: str = Form(...)):
+    # verify the key
     if key != os.getenv('MIRA_KEY'):
         return {"success":"false","msg":"Unauthorized"}
     
+    # create the repository if not exists
     if not os.path.exists(os.getenv('UPLOAD_DIRECTORY')):
         os.makedirs(os.getenv('UPLOAD_DIRECTORY'))
-        
+    
     file_location = f"{os.getenv('UPLOAD_DIRECTORY')}{file.filename}"
     
+    # return if file already exists
     if os.path.exists(file_location):
         return {"success":"false","msg":"File already exists!"}
     
+    # save the file
     with open(file_location, "wb") as f:
         f.write(await file.read())
     
+    # generate the embeddings and save
     res = train_mira(file_location)
     
     if res:
         return {"success":"true","msg":"training completed!"}
     
     return {"success":"false","msg":"something went wrong!"}
-    
-    
+
+
+# endpoint to display the webpage to access MIRA
 @app.get("/mira", response_class=HTMLResponse)
 async def get_webpage():
     return HTMLResponse(content=html_content)

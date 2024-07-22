@@ -9,6 +9,7 @@ DB_NAME = os.getenv('DB_NAME')
 COLLECTION_NAME = os.getenv('COLLECTION_NAME')
 ATLAS_VECTOR_SEARCH_INDEX_NAME = os.getenv('ATLAS_VECTOR_SEARCH_INDEX_NAME')
 
+# establish the database connetion
 vector_search = MongoDBAtlasVectorSearch.from_connection_string(
         MONGODB_ATLAS_CLUSTER_URI,
         f"{DB_NAME}.{COLLECTION_NAME}",
