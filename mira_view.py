@@ -16,14 +16,14 @@ html_content = f"""
                 justify-content: center;
                 align-items: center;
                 height: 100vh;
-                background-color: #1c1b1b;
+                background-color: #181818;
             }}
 
             .container {{
-                background-color: rgb(61 59 59);
+                background-color: #f3f3f3;
                 padding: 40px;
-                border-radius: 25px;
-                box-shadow: 20px 20px 50px rgb(235 221 221 / 30%);
+                border-radius: 15px;
+                /* box-shadow: rgba(0, 0, 0, 0.19) 0px 10px 20px, rgba(0, 0, 0, 0.23) 0px 6px 6px; */
                 width: 83%;
                 height: 80%;
                 display: flex;
@@ -31,11 +31,16 @@ html_content = f"""
                 justify-content: center;
                 align-items: center;
                 text-align: center;
+                box-shadow: #6f6a69 0px 45px 90px -18px inset, #6f6a69 0px 27px 54px -27px inset;
             }}
 
             #heading {{
-                color: #f3f3f3;
+                color: #060606;
                 font-family: cursive;
+                background: linear-gradient(to right, #121FCF 0%, #CF1512 100%);
+                -webkit-background-clip: text;
+                -webkit-text-fill-color: transparent;
+
             }}
 
             input[type="text"] {{
@@ -75,7 +80,7 @@ html_content = f"""
                 font-weight: 500;
                 font-size: 18px;
                 text-align: left;
-                color: white;
+                color: #060606;
                 
             }}
 
@@ -104,7 +109,7 @@ html_content = f"""
                 transform: translate(-50%, -50%);
                 font-size: 16px;
                 font-weight: bold;
-                color: white;
+                color: #060606;
             }}
 
             @keyframes spin {{
@@ -141,7 +146,7 @@ html_content = f"""
                 document.getElementById('answer').innerText = '';
                 document.querySelector('.copy-btn').style.display = 'none';
                 startCounter();
-                // Mock API call
+                // API call
                 fetchAnswerFromAPI(question);
             }}
 
