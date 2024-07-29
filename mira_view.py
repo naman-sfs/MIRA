@@ -227,3 +227,245 @@ html_content = f"""
     </html>
 
 """
+
+
+
+html_content_convo = f"""
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>MIRA Chat</title>
+    <style>
+        body {{
+            font-family: Arial, sans-serif;
+            display: flex;
+            flex-direction: row;
+            height: 100vh;
+            margin: 0;
+            width:60vw;
+            position:fixed;
+            left:20vw;
+            background-color: #3d3d3d;
+            
+
+        }}
+        #chat-container {{
+            flex: 1;
+            padding: 10px;
+            overflow-y: auto;
+            display: flex;
+            flex-direction: column;
+            background-color: #181818;
+        }}
+        .chat-message {{
+            max-width: 60%;
+            padding: 10px;
+            margin: 5px 0;
+            border-radius: 10px;
+            clear: both;
+        }}
+        .user-message {{
+            background-color: #dcf8c6;
+            align-self: flex-end;
+            text-align: right;
+        }}
+        .assistant-message {{
+            background-color: #f1f0f0;
+            align-self: flex-start;
+            ont-family: system-ui;
+        }}
+        #input-container {{
+            display: flex;
+            padding: 0px 0px;
+            
+        }}
+        #input-container input {{
+            flex: 1;
+            padding: 10px;
+            border: 1px solid #ccc;
+            border-radius: 5px;
+        }}
+        #input-container button {{
+            padding: 10px;
+            margin-left: 0px;
+            background-color: #007bff;
+            color: white;
+            border: none;
+            border-radius: 5px;
+            width: 10%;
+        }}
+        .typing {{
+            font-style: italic;
+            color: #888;
+        }}
+        #header {{
+            display: flex;
+            align-items: center;
+            padding: 5px;
+            background-color: #f1f0f0;
+            color: white;
+            padding-left:10px;
+        }}
+        #header div {{
+            width: 25px;
+            height: 25px;
+            border-radius: 50%;
+            margin-right: 10px;
+            background-color: black;
+            border: 2px solid #007bff;
+        }}
+        #header h1 {{
+            font-size: 1.5em;
+            margin: 0;
+            font-family: cursive;
+            background: linear-gradient(to right, #121FCF 0%, #CF1512 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }}
+        
+        
+        #sidebar {{
+            width: 240px;
+            background-color: #f4f4f4;
+            padding: 0px;
+            height: 100vh;
+            overflow-y: auto;
+        }}
+
+        #sidebar-heading{{
+            background-color: #007bff;
+            font-size: 1.5em;
+            padding: 8px;
+            font-family: sans-serif;
+            font-weight: 700;
+            color:#f1f0f0
+        }}
+        #chat {{
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+        }}
+        
+        .conversation {{
+            cursor: pointer;
+            padding: 10px;
+            font-weight: 600;
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
+        }}
+        .conversation:hover {{
+            background-color: #007bff;
+            color: #f1f0f0;
+        }}
+    </style>
+</head>
+<body>
+    <div id="sidebar">
+        <div id="sidebar-heading">Conversations</div>
+        <div id="conversation-list">
+            <div class="conversation">FastAPI CRUD operations in python and mongo</div>
+            <div class="conversation">How to build a robot</div>
+            <div class="conversation">What is Bipolar Disorder?</div>
+        </div>
+    </div>
+    <div id="chat">
+        <div id="header">
+            <div></div>
+            <h1>MIRA</h1>
+        </div>
+        <div id="chat-container"></div>
+        <div id="input-container">
+            <input type="text" id="message-input" placeholder="Type a message...">
+            <button id="send-button">Send</button>
+        </div>
+    </div>
+
+    <script>
+        let chatHistory = [];
+
+        document.getElementById('send-button').addEventListener('click', sendMessage);
+        document.getElementById('message-input').addEventListener('keypress', function (e) {{
+            if (e.key === 'Enter') {{
+                sendMessage();
+            }}
+        }});
+
+        function sendMessage() {{
+            const input = document.getElementById('message-input');
+            const message = input.value.trim();
+            if (message === '') return;
+
+            // Add user message to chat
+            addMessageToChat('user', message);
+            input.value = '';
+
+            // Show typing animation
+            showTypingAnimation();
+
+            // Send message to the assistant
+            fetch('{os.getenv('MY_DOMAIN')}/api/mira/ask', {{
+                method: 'POST',
+                headers: {{
+                    'Content-Type': 'application/json'
+                }},
+                body: JSON.stringify({{
+                    question: message,
+                    key: "1234"
+                }})
+            }})
+            .then(response => response.json())
+            .then(data => {{
+                // Remove typing animation
+                removeTypingAnimation();
+
+                // Add assistant's reply to chat
+                addMessageToChat('assistant', data.data);
+            }})
+            .catch(error => {{
+                console.error('Error:', error);
+            }});
+        }}
+
+        function addMessageToChat(sender, message) {{
+            const chatContainer = document.getElementById('chat-container');
+            const messageElement = document.createElement('div');
+            messageElement.classList.add('chat-message');
+            if (sender === 'user') {{
+                messageElement.classList.add('user-message');
+            }} else {{
+                messageElement.classList.add('assistant-message');
+            }}
+            messageElement.innerText = message;
+
+            // Add message to chat history
+            chatHistory.push({{ sender: sender, message: message }});
+
+            chatContainer.appendChild(messageElement);
+            chatContainer.scrollTop = chatContainer.scrollHeight;
+        }}
+
+        function showTypingAnimation() {{
+            const chatContainer = document.getElementById('chat-container');
+            const typingElement = document.createElement('div');
+            typingElement.classList.add('chat-message', 'assistant-message', 'typing');
+            typingElement.textContent = 'Assistant is typing...';
+            typingElement.id = 'typing-animation';
+
+            chatContainer.appendChild(typingElement);
+            chatContainer.scrollTop = chatContainer.scrollHeight;
+        }}
+
+        function removeTypingAnimation() {{
+            const typingElement = document.getElementById('typing-animation');
+            if (typingElement) {{
+                typingElement.remove();
+            }}
+        }}
+    </script>
+</body>
+</html>
+
+"""

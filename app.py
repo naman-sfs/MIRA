@@ -5,14 +5,15 @@ from fastapi.middleware.cors import CORSMiddleware
 from pydantic import BaseModel
 from MIRA_QA import MIRA
 from training import train_mira
-from mira_view import html_content
-
+from mira_view import html_content, html_content_convo
+from message import add_message
 app = FastAPI()
 
 origins = [
     "http://localhost:8000",
     "http://127.0.0.1:8000",
-    "http://ec2-3-106-224-103.ap-southeast-2.compute.amazonaws.com:8000"
+    "http://ec2-3-106-224-103.ap-southeast-2.compute.amazonaws.com:8000",
+    "http://127.0.0.1:5500"
 ]
 
 app.add_middleware(
@@ -26,6 +27,7 @@ app.add_middleware(
 
 class Question(BaseModel):
     question: str
+    conversation_id:str
     key:str
 
 
@@ -38,12 +40,14 @@ async def mira(ques:Question):
     if ques.key != os.getenv('MIRA_KEY'):
         return {"success":"false","msg":"Unauthorized"}
     
+    add_message(ques.question,"HUMAN",ques.conversation_id)
     # retrieve the similar chunks
     docs = mira.retrieve_documents_HYDE(ques.question)
     
     # generate the answer from query
     answer = mira.ask_query(ques.question,docs)
     
+    add_message(answer,"AI",ques.conversation_id)
     return {"success":"true","data": answer}
     # except Exception as e:
     #     return {"success":"false","msg":e}
@@ -83,3 +87,7 @@ async def training(file: UploadFile = File(...),key: str = Form(...)):
 @app.get("/mira", response_class=HTMLResponse)
 async def get_webpage():
     return HTMLResponse(content=html_content)
+
+@app.get("/mira-chat", response_class=HTMLResponse)
+async def get_webpage2():
+    return HTMLResponse(content=html_content_convo)

@@ -5,7 +5,7 @@ from langchain_openai import OpenAIEmbeddings
 from langchain.prompts import ChatPromptTemplate
 from langchain_core.output_parsers import StrOutputParser
 from database import vector_search
-from prompt import template, passage_template
+from prompt import template, passage_template,template2
 
 load_dotenv()
 
