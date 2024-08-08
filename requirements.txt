@@ -37,8 +37,8 @@ openai==1.35.13
 orjson==3.10.6
 packaging==24.1
 pip3-autoremove==1.2.2
-pydantic==2.7.1
-pydantic_core==2.18.2
+pydantic>=2.7.4,<3.0.0
+pydantic_core==2.20.1
 pymongo==4.8.0
 pypdf==4.3.0
 python-dotenv==1.0.1
