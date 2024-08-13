@@ -54,9 +54,18 @@ jobs:
     
       - name: Stop and remove existing Docker container on port 8080
         run: |
+          # Find the container ID using the port 8080
+          CONTAINER_ID=$(docker ps --filter "publish=8080" --format "{{.ID}}")
           
           # If a container is found, stop and remove it
-            docker stop mycontainer
+          if [ ! -z "$CONTAINER_ID" ]; then
+            echo "Stopping container $CONTAINER_ID"
+            docker stop $CONTAINER_ID
+            docker rm $CONTAINER_ID
+          else
+            echo "No container found using port 8080"
+          fi
+      
       
 
       - name: Run Docker Image to serve users
