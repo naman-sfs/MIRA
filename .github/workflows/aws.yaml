@@ -52,11 +52,11 @@ jobs:
         id: login-ecr
         uses: aws-actions/amazon-ecr-login@v1
     
-      - name: Stop and remove existing Docker container on port 8080
+      - name: Remove existing Docker image
         run: |
-          # Find the container ID using the port 8080
-          docker stop mycontainer
+          docker rmi -f "${{ steps.login-ecr.outputs.registry }}"/"${{ secrets.ECR_REPO }}":latest
       
       - name: Run Docker Image to serve users
         run: |
+         docker pull "${{ steps.login-ecr.outputs.registry }}"/"${{ secrets.ECR_REPO }}":latest
          docker run -d --rm -e AWS_ACCESS_KEY_ID="${{ secrets.AWS_ACCESS_KEY_ID }}" -e AWS_SECRET_ACCESS_KEY="${{ secrets.AWS_SECRET_ACCESS_KEY }}" -e AWS_DEFAULT_REGION="${{ secrets.AWS_DEFAULT_REGION }}" --volume /home/ubuntu/.env:/app/.env -p 8080:8000 --name mycontainer "${{ steps.login-ecr.outputs.registry }}"/"${{ secrets.ECR_REPO }}":latest
