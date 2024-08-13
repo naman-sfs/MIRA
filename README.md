@@ -1,2 +1,2 @@
 # MIRA
-MIRA ia a AI based psychologist.
+MIRA ia a AI based psychologist..
