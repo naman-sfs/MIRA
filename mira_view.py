@@ -120,7 +120,7 @@ html_content = f"""
     </head>
     <body>
         <div class="container">
-            <h1 id="heading">MIRA CHAT</h1>
+            <h1 id="heading">MIRA CHAT BOT</h1>
             <input type="text" id="question" placeholder="Ask your question here...">
             <div class="button-container" style="display:flex;">
                 <button class="submit-btn" onclick="submitQuestion()">Submit</button>
