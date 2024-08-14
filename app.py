@@ -27,7 +27,6 @@ app.add_middleware(
 
 class Question(BaseModel):
     question: str
-    conversation_id:str
     key:str
 
 
@@ -40,14 +39,14 @@ async def mira(ques:Question):
     if ques.key != os.getenv('MIRA_KEY'):
         return {"success":"false","msg":"Unauthorized"}
     
-    add_message(ques.question,"HUMAN",ques.conversation_id)
+    #add_message(ques.question,"HUMAN",ques.conversation_id)
     # retrieve the similar chunks
     docs = mira.retrieve_documents_HYDE(ques.question)
     
     # generate the answer from query
     answer = mira.ask_query(ques.question,docs)
     
-    add_message(answer,"AI",ques.conversation_id)
+    #add_message(answer,"AI",ques.conversation_id)
     return {"success":"true","data": answer}
     # except Exception as e:
     #     return {"success":"false","msg":e}
